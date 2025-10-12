@@ -1,0 +1,3 @@
+[console_scripts]
+gym_super_mario_bros = gym_super_mario_bros._app.cli:main
+

@@ -1,0 +1,3 @@
+[console_scripts]
+nes_py = nes_py.app.cli:main
+

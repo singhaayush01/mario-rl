@@ -1,0 +1,10 @@
+Episode,Reward,Steps,Distance
+1,454.00,2000,554.0
+2,690.00,2000,554.0
+3,699.00,2000,553.0
+4,454.00,2000,554.0
+5,454.00,2000,554.0
+
+Average Reward,550.20
+Average Steps,2000.0
+Average Distance,553.8
