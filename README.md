@@ -9,3 +9,12 @@ Action Space (SIMPLE_MOVEMENT):
 
 Reward structure: positive rewards for moving forward, collecting coins, killing enemies.
 Distance calculated from horizontal x position (RAM-based fallback).
+
+# 8-Week RL Mario Project
+
+Week 1: Environment setup and random agent baseline.
+- Tested SuperMarioBros-1-1-v3 environment
+- Random agent ran for 10 episodes
+- Baseline metrics saved in baseline_report.txt
+- Action space and reward structure documented
+
