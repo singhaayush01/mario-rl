@@ -1,35 +1,22 @@
 import gym
-from preprocessing import preprocess_frame, FrameStack
+import gym_super_mario_bros
+from gym_super_mario_bros.actions import SIMPLE_MOVEMENT
+from nes_py.wrappers import JoypadSpace
 
 class GameEnv:
     def __init__(self, env_name):
-        # Create the environment
-        self.env = gym.make(env_name) # creating a game
-        self.frame_stack = FrameStack(4)
+        self.env = gym.make(env_name)
+
+        self.env = JoypadSpace(self.env, SIMPLE_MOVEMENT)
 
     def reset(self):
-        frame = self.env.reset() # starting a new game
+        state = self.env.reset()
+        if isinstance(state, tuple):
+            state = state[0]
+        return state
 
-        if isinstance(frame, tuple):
-            frame, _ = frame
-
-        frame = preprocess_frame(frame) # Process the first game
-        state = self.frame_stack.reset(frame)
-        return state # what the model sees
-    
-    def step(self, action): # A function named step inside environment wrapper classes
-        # Take (one step/runs one frame) in the game
-        out = self.env.step(action)
-
-        if len(out) == 4:
-            next_frame, reward, done, info = out
-        else:
-            next_frame, reward, terminated, truncated, info = out
-            done = terminated or truncated
-
-        next_frame = preprocess_frame(next_frame)
-        next_state = self.frame_stack.step(next_frame)
-        # Return everything the agent needs
+    def step(self, action):
+        next_state, reward, done, info = self.env.step(action)
         return next_state, reward, done, info
 
     def render(self):
@@ -37,4 +24,3 @@ class GameEnv:
 
     def close(self):
         self.env.close()
-
