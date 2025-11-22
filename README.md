@@ -1,81 +1,69 @@
-Action Space (SIMPLE_MOVEMENT):
-0: noop
-1: right
-2: right + A
-3: right + B
-4: right + A + B
-5: A
-6: left
+🍄 Super Mario Bros. RL Project (DDQN Agent)
 
-Reward structure: positive rewards for moving forward, collecting coins, killing enemies.
-Distance calculated from horizontal x position (RAM-based fallback).
+This repository documents the development of an Artificial Intelligence (AI) agent trained to complete World 1-1 of the classic Super Mario Bros. using Deep Reinforcement Learning (DRL).
 
-# 8-Week RL Mario Project
+Objective: Train a Deep Double Q-Network (DDQN) agent to navigate and complete Super Mario Bros. Level 1-1 using only raw pixel input.
 
-🗓️ Week 1: Environment setup and random agent baseline.
+🗓️ Weekly Progress Summary (Weeks 1 - 6)
 
-- Tested SuperMarioBros-1-1-v3 environment
-- Random agent ran for 10 episodes
-- Baseline metrics saved in baseline_report.txt
-- Action space and reward structure documented
+Week 1: Baseline and Setup
 
-🗓️ Week 2: Learning Progress and Updates
+The initial phase focused on establishing a stable working environment. The gym-super-mario-bros environment was successfully integrated, and a Random Agent was implemented to establish the performance floor.
 
-During Week 2, I focused on building a deeper understanding of reinforcement learning fundamentals and improving the Mario RL environment. Key takeaways:
+Week 2: DRL Fundamentals & Reward Engineering
 
-State Space & Preprocessing – Learned how each game frame represents the environment’s state and how preprocessing (grayscale, resize, normalization) reduces complexity for the model.
+Key accomplishments included:
 
-Reward Engineering – Designed custom reward functions that encourage progress, penalize idleness, and reward level completion.
+State Space Preprocessing: Implemented grayscale conversion, downsampling (84x84), and frame stacking (4 frames) to reduce state complexity and capture motion (see environment.py).
 
-Policy Learning Basics – Studied how agents map observed states to actions using learned policies instead of random behavior.
+Custom Reward Shaping: Developed a custom reward function that aggressively penalizes idleness and rewards forward progress and completion. This was crucial for moving the agent beyond trivial random movement.
 
-Baseline Random Agent – Implemented a random-action agent to establish initial performance benchmarks.
+Week 3: Deep Q-Network (DQN) Implementation
 
-Understanding Environment Feedback – Explored how the environment returns observations, rewards, and episode termination signals.
+The core learning algorithm was deployed: a Deep Q-Network (DQN), later adapted to the DDQN structure for stability. Initial training confirmed the agent learned the fundamental skill of Running Right and avoiding immediate death pits, with average reward improving dramatically from $\approx -750$ to $\approx -50$ after 1,000 episodes.
 
-Exploration vs. Exploitation – Learned why balancing these two is critical for efficient RL training.
+Week 4: DDQN Refinements & Optimized Training
 
-Importance of Reward Design – Understood that poor reward shaping can mislead learning, while well-engineered rewards accelerate convergence toward optimal behavior.
+The focus shifted to maximizing learning stability and efficiency.
 
+DDQN Transition: Fully implemented the Deep Dueling Double Q-Network (DDQN) structure to improve the accuracy of Q-value estimation. This is critical for states where Mario has multiple advantageous actions (e.g., when close to a power-up).
 
-🗓️ Week 3 – Basic DQN Implementation
+Reward Finalization: Introduced the dedicated FastRewardShaper class to refine the reward logic, ensuring new distance records are highly rewarded and eliminating micro-penalties for minor hesitations.
 
-This week I implemented the full Deep Q-Network to replace the random policy.
+Architecture Optimization: Confirmed all training runs utilize the Mac MPS GPU acceleration (torch.backends.mps) for significantly faster iteration times.
 
-Network architecture
+Week 5: Comprehensive Evaluation Pipeline
 
-Three convolutional layers (32, 64, 64 filters) followed by two fully connected layers (512 → action space).
+A robust testing system was introduced to formally measure the agent's performance, moving beyond anecdotal observation.
 
-ReLU activations and Xavier weight initialization.
+Formal Testing (test_agent.py): Developed a script to run the trained model over multiple episodes (typically 20-50) to calculate key metrics:
 
-Training setup
+Completion Rate: Percentage of episodes ending in victory (reaching the flagpole).
 
-ε-greedy exploration: start = 1.0, end = 0.01, decay = 0.995.
+Average Distance: Mean maximum X-position reached.
 
-Replay memory size = 50 000, batch size = 32.
+Best Distance: The furthest X-position achieved (The current record-holder).
 
-Discount factor γ = 0.99, optimizer = Adam (lr = 1e-4).
+Model Checkpointing: Implemented model saving logic (mario_best.pth) to automatically store the network weights whenever a new Max X distance is achieved.
 
-Target network updated every two episodes.
+Week 6: Policy Visualization and Long-Term Run
 
-Trained on World 1-1 for 1,000 episodes.
+The project entered its final, performance-focused phase.
 
-Used TensorBoard to track loss, reward, and ε values.
+Live Demonstration (play_mario.py): Developed a script to load the latest mario_best.pth model and visualize the agent's learned policy in real-time. This provides critical insight into why the agent succeeds or fails at specific obstacles.
 
-Initial results (≈ first 1,000 episodes)
+Commitment to Completion: Commenced the final, long-duration training run (set for 5,000+ episodes) required to achieve the necessary skill set for full level completion (X=3152).
 
-Average reward improved from about –750 to around –50.
+🛠️ Key Technical Details
 
-Training loss decreased steadily over time.
+1. DDQN Architecture
 
-Epsilon decayed smoothly to ≈ 0.4 by episode 1,000.
+The model uses a Dueling DQN structure to separate the Value stream (how good a state is) and the Advantage stream (the benefit of taking a specific action). This separation significantly speeds up learning complex state representations.
 
-The trained model was saved as mario_dqn.pth.
+2. Environment Compatibility
 
-Observations
+The project utilizes torch.backends.mps for native GPU acceleration on Mac (Apple Silicon), ensuring high-speed training and efficient resource usage.
 
-Early learning was unstable due to sparse rewards.
+3. Current Status
 
-Performance improved once ε decreased and the replay buffer filled.
-
-Future goals include longer training (1,000 episodes) and video recording of evaluation runs.
+The agent is currently in long-term training, aggressively exploring advanced platforming and enemy interactions, with the goal of generating the mario_completed.pth checkpoint file.
